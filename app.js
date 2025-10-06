@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Fix for ES Modules (__dirname not defined)
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Explicitly tell dotenv where to find your .env file
+
 dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 import express from "express";
