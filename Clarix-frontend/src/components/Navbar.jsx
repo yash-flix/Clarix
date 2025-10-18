@@ -24,12 +24,13 @@ export default function Navbar() {
     <div className="navbar bg-base-300 shadow-lg">
       <div className="flex-1">
         <Link to="/" className="btn btn-ghost text-xl">
-          Clarix
+          CLARIX
         </Link>
       </div>
       <div className="flex-none gap-2">
         <span className="text-sm mr-2">Hi, {user.email}</span>
         
+        {/* Show Admin button only for admin users */}
         {user.role === "admin" && (
           <Link to="/admin" className="btn btn-sm btn-primary">
             Admin

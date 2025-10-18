@@ -4,7 +4,7 @@ import mongoose from "mongoose"
 const ticketSchema = new mongoose.Schema({
     title:String,
     description:String,
-    status:{type:String , default: "TODO"},
+    status:{type:String , default: "OPEN"},
     createdBy:{type:mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
@@ -14,7 +14,7 @@ const ticketSchema = new mongoose.Schema({
     },
     priority:String,
     deadline:Date,
-    helpfullNotes: String ,
+    helpfulNotes: String ,
     relatedSkills : [String] ,
     createdAt: {
         type:Date,

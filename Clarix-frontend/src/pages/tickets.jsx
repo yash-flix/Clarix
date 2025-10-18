@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 export default function Tickets() {
   const [form, setForm] = useState({ title: "", description: "" });
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
 
@@ -15,6 +16,14 @@ export default function Tickets() {
         headers: { Authorization: `Bearer ${token}` },
         method: "GET",
       });
+
+      // Handle 401 Unauthorized
+      if (res.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+        return;
+      }
+
       const data = await res.json();
       setTickets(data.tickets || []);
     } catch (err) {
@@ -43,9 +52,17 @@ export default function Tickets() {
         body: JSON.stringify(form),
       });
 
+      // Handle 401 Unauthorized
+      if (res.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+        return;
+      }
+
       const data = await res.json();
 
-      if (res.ok) {
+      if (data.success) {
+        alert("Ticket created! AI is analyzing it...");
         setForm({ title: "", description: "" });
         fetchTickets();
       } else {
@@ -97,7 +114,33 @@ export default function Tickets() {
             >
               <h3 className="font-bold text-lg">{ticket.title}</h3>
               <p className="text-sm">{ticket.description}</p>
-              <p className="text-sm text-base-content/60">
+              <div className="flex gap-2 mt-2">
+                <span
+                  className={`badge badge-sm ${
+                    ticket.status === "OPEN"
+                      ? "badge-info"
+                      : ticket.status === "IN_PROGRESS"
+                      ? "badge-warning"
+                      : "badge-success"
+                  }`}
+                >
+                  {ticket.status}
+                </span>
+                {ticket.priority && (
+                  <span
+                    className={`badge badge-sm ${
+                      ticket.priority === "high"
+                        ? "badge-error"
+                        : ticket.priority === "medium"
+                        ? "badge-warning"
+                        : "badge-info"
+                    }`}
+                  >
+                    {ticket.priority}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-base-content/60 mt-2">
                 Created At: {new Date(ticket.createdAt).toLocaleString()}
               </p>
             </Link>
