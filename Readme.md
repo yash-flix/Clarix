@@ -76,14 +76,17 @@ Before running Clarix, make sure you have:
 
 ## ⚙️ Installation & Setup
 
-### 1️⃣ Clone the Repository
+## 1️⃣ Clone the Repository
 
 git clone <your-repository-url>
 cd clarix-ticket-system
-2️⃣ Install Dependencies
-npm install
+---
 
-3️⃣ Configure Environment Variables
+## 2️⃣ Install Dependencies
+npm install
+---
+
+## 3️⃣ Configure Environment Variables
 
 Create a .env file in the project root and include the following:
 
