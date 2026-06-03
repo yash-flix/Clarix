@@ -1,2 +1,133 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: clarix --default;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", Georgia, "Times New Roman", serif;
+  --color-accent: #ff3b00;
+  --color-accent-hover: #e63600;
+  --color-ink: #0a0a0a;
+  --color-muted: #737373;
+  --color-line: #e5e5e5;
+  --color-surface: #fafaf8;
+  --color-paper: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: "clarix";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #ffffff;
+  --color-base-200: #fafaf8;
+  --color-base-300: #e5e5e5;
+  --color-base-content: #0a0a0a;
+
+  --color-primary: #ff3b00;
+  --color-primary-content: #ffffff;
+
+  --color-neutral: #f5f5f4;
+  --color-neutral-content: #525252;
+
+  --radius-selector: 0;
+  --radius-field: 0;
+  --radius-box: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-base-200 text-base-content antialiased font-sans;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: #ff3b00;
+  color: #fff;
+}
+
+/* Dot grid — Pactix-style sections */
+.bg-dots {
+  background-color: var(--color-surface);
+  background-image: radial-gradient(#d4d4d4 0.8px, transparent 0.8px);
+  background-size: 20px 20px;
+}
+
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.label-caps {
+  @apply text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400;
+}
+
+.input-field {
+  @apply w-full border border-neutral-200 bg-white px-4 py-3 text-sm text-[#0a0a0a] placeholder:text-neutral-400 transition-colors;
+  @apply focus:border-[#0a0a0a] focus:outline-none;
+}
+
+.textarea-field {
+  @apply w-full border border-neutral-200 bg-white px-4 py-3 text-sm text-[#0a0a0a] placeholder:text-neutral-400 transition-colors resize-none min-h-[140px];
+  @apply focus:border-[#0a0a0a] focus:outline-none;
+}
+
+.btn-accent {
+  @apply inline-flex items-center justify-center gap-2 bg-[#ff3b00] px-5 py-2.5 text-sm font-medium text-white transition-colors;
+  @apply hover:bg-[#e63600] disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-ghost-nav {
+  @apply text-sm text-neutral-500 transition-colors hover:text-[#0a0a0a];
+}
+
+.link-nav {
+  @apply text-[10px] font-medium uppercase tracking-[0.22em] text-neutral-400 transition-colors hover:text-[#0a0a0a];
+}
+
+.divider-h {
+  @apply border-t border-neutral-200;
+}
+
+.stat-cell {
+  @apply flex flex-col justify-center px-6 sm:px-10 py-8 sm:py-10 border-neutral-200;
+}
+
+.badge-box {
+  @apply inline-block border border-neutral-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-500;
+}
+
+.badge-box-active {
+  @apply inline-block border border-[#ff3b00] px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[#ff3b00] bg-[#ff3b00]/5;
+}
+
+.prose-clarix {
+  @apply text-neutral-600 leading-relaxed text-sm;
+}
+
+.prose-clarix h1,
+.prose-clarix h2,
+.prose-clarix h3 {
+  font-family: var(--font-serif);
+  @apply text-[#0a0a0a] font-normal mt-5 mb-2;
+}
+
+.prose-clarix p {
+  @apply mb-3;
+}
+
+.prose-clarix ul {
+  @apply list-disc pl-5 mb-3 space-y-1;
+}
+
+.prose-clarix code {
+  @apply border border-neutral-200 bg-neutral-50 px-1.5 py-0.5 text-xs font-mono text-[#0a0a0a];
+}
+
+.prose-clarix a {
+  @apply text-[#ff3b00] underline-offset-2 hover:underline;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+import PageLayout from "../components/PageLayout";
+import { RoleBadge } from "../components/ui/badges";
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -17,16 +18,13 @@ export default function AdminPanel() {
   const fetchUsers = async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/auth/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (res.ok) {
-        setUsers(data.users || data); // Handle both response formats
-        setFilteredUsers(data.users || data);
-      } else {
-        console.error(data.error);
+        const list = data.users || data;
+        setUsers(list);
+        setFilteredUsers(list);
       }
     } catch (err) {
       console.error("Error fetching users", err);
@@ -62,11 +60,7 @@ export default function AdminPanel() {
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) {
-        console.error(data.error || "Failed to update user");
-        return;
-      }
+      if (!res.ok) return;
 
       setEditingUser(null);
       setFormData({ role: "", skills: "" });
@@ -85,86 +79,102 @@ export default function AdminPanel() {
   };
 
   return (
-    <>
-      <Navbar />
-      <div className="max-w-4xl mx-auto mt-10 p-4">
-        <h1 className="text-3xl font-bold mb-6">Admin Panel - Manage Users</h1>
-        <input
-          type="text"
-          className="input input-bordered w-full mb-6"
-          placeholder="Search by email"
-          value={searchQuery}
-          onChange={handleSearch}
-        />
-        {filteredUsers.map((user) => (
-          <div
-            key={user._id}
-            className="bg-base-200 shadow-lg rounded-lg p-6 mb-4 border border-base-300"
-          >
-            <p className="mb-2">
-              <strong>Email:</strong> {user.email}
-            </p>
-            <p className="mb-2">
-              <strong>Current Role:</strong>{" "}
-              <span className="badge badge-primary">{user.role}</span>
-            </p>
-            <p className="mb-2">
-              <strong>Skills:</strong>{" "}
-              {user.skills && user.skills.length > 0
-                ? user.skills.join(", ")
-                : "N/A"}
-            </p>
+    <PageLayout className="py-0">
+      <section className="bg-dots border-b border-neutral-200 -mx-5 sm:-mx-8 px-5 sm:px-8 py-12 sm:py-16">
+        <p className="label-caps mb-6">Administration</p>
+        <h1 className="font-display text-4xl sm:text-5xl text-ink leading-tight">
+          Manage <em className="text-neutral-400">operators.</em>
+        </h1>
+      </section>
 
-            {editingUser === user.email ? (
-              <div className="mt-4 space-y-2">
-                <select
-                  className="select select-bordered w-full"
-                  value={formData.role}
-                  onChange={(e) =>
-                    setFormData({ ...formData, role: e.target.value })
-                  }
-                >
-                  <option value="user">User</option>
-                  <option value="moderator">Moderator</option>
-                  <option value="admin">Admin</option>
-                </select>
+      <div className="py-10 sm:py-14">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <p className="label-caps">{filteredUsers.length} users</p>
+          <input
+            type="search"
+            className="input-field sm:max-w-xs py-2"
+            placeholder="Search email…"
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </div>
 
-                <input
-                  type="text"
-                  placeholder="Comma-separated skills"
-                  className="input input-bordered w-full"
-                  value={formData.skills}
-                  onChange={(e) =>
-                    setFormData({ ...formData, skills: e.target.value })
-                  }
-                />
-
-                <div className="flex gap-2">
-                  <button
-                    className="btn btn-success btn-sm"
-                    onClick={handleUpdate}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="btn btn-ghost btn-sm"
-                    onClick={() => setEditingUser(null)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                className="btn btn-primary btn-sm mt-2"
-                onClick={() => handleEditClick(user)}
-              >
-                Edit
-              </button>
-            )}
+        <div className="border-t border-neutral-200">
+          <div className="hidden sm:grid grid-cols-[1fr_120px_1fr_140px] gap-4 py-3 border-b border-neutral-200">
+            <span className="label-caps">User</span>
+            <span className="label-caps">Role</span>
+            <span className="label-caps">Skills</span>
+            <span className="label-caps text-right">Actions</span>
           </div>
-        ))}
+
+          {filteredUsers.map((user) => (
+            <div
+              key={user._id}
+              className="grid sm:grid-cols-[1fr_120px_1fr_140px] gap-4 py-6 border-b border-neutral-200 items-start"
+            >
+              <p className="text-sm text-ink font-medium truncate">{user.email}</p>
+              <div>
+                <RoleBadge role={user.role} />
+              </div>
+              <p className="text-sm text-neutral-500 truncate">
+                {user.skills?.length > 0 ? user.skills.join(", ") : "—"}
+              </p>
+              <div className="sm:text-right">
+                {editingUser === user.email ? (
+                  <div className="space-y-3 text-left sm:min-w-[200px]">
+                    <select
+                      className="input-field py-2"
+                      value={formData.role}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
+                    >
+                      <option value="user">User</option>
+                      <option value="moderator">Moderator</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="Skills, comma-separated"
+                      className="input-field py-2"
+                      value={formData.skills}
+                      onChange={(e) =>
+                        setFormData({ ...formData, skills: e.target.value })
+                      }
+                    />
+                    <div className="flex gap-2">
+                      <button type="button" className="btn-accent py-2 px-4 text-xs" onClick={handleUpdate}>
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-ghost-nav text-xs py-2"
+                        onClick={() => setEditingUser(null)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className="text-sm text-ink underline underline-offset-2 hover:text-accent"
+                    onClick={() => handleEditClick(user)}
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {filteredUsers.length === 0 && (
+            <p className="py-16 text-center font-display text-xl text-neutral-400">
+              No users found.
+            </p>
+          )}
+        </div>
       </div>
-    </>
+    </PageLayout>
   );
 }
