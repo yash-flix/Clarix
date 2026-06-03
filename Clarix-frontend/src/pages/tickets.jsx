@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PageLayout from "../components/PageLayout";
+import DeskPanel from "../components/DeskPanel";
 import { StatusBadge, PriorityBadge } from "../components/ui/badges";
 import { ArrowUpRight } from "../components/Logo";
 
@@ -152,24 +153,27 @@ export default function Tickets() {
         </div>
       )}
 
-      {/* Hero strip — dot grid */}
+      {/* Hero — balanced headline + desk panel */}
       <section className="bg-dots border-b border-neutral-200 -mx-5 sm:-mx-8 px-5 sm:px-8 py-12 sm:py-16 lg:py-20">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
-          <div className="lg:col-span-7">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 xl:gap-16 items-stretch">
+          <div className="flex flex-col justify-center py-4 lg:py-8">
             <p className="label-caps mb-6">001 — Desk</p>
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] leading-[1.1] text-ink tracking-tight">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.5rem] leading-[1.08] text-ink tracking-tight">
               You submit.
               <br />
               <em className="font-normal text-neutral-400">We route.</em>
               <br />
-              You <span className="text-accent underline decoration-accent decoration-2 underline-offset-4">resolve.</span>
+              You{" "}
+              <span className="text-[#ff3b00] underline decoration-[#ff3b00] decoration-2 underline-offset-[6px]">
+                resolve.
+              </span>
             </h1>
-          </div>
-          <div className="lg:col-span-5">
-            <p className="text-sm text-neutral-500 leading-relaxed max-w-md">
-              Clarix categorizes every request, assigns priority, and matches the right moderator — without the back-and-forth.
+            <p className="mt-8 text-base text-neutral-400 leading-relaxed max-w-md lg:hidden">
+              Your support desk — triage, routing, and resolution in one place.
             </p>
           </div>
+
+          <DeskPanel openCount={stats.open} activeCount={stats.inProgress} />
         </div>
       </section>
 

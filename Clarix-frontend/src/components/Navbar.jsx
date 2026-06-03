@@ -23,18 +23,20 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-paper border-b border-neutral-200">
       <div className="max-w-[1200px] mx-auto px-5 sm:px-8">
         <div className="flex h-[72px] items-center justify-between gap-6">
-          <div className="flex items-center gap-10 lg:gap-16">
-            <Logo to="/" />
-            <nav className="hidden md:flex items-center gap-8">
-              <Link to="/" className="link-nav">
+          <div className="flex items-center gap-8 lg:gap-12">
+            <div className="flex items-center gap-5">
+              <Logo to="/" />
+              <Link to="/" className="link-nav pt-0.5 hidden sm:inline">
                 Desk
               </Link>
-              {user.role === "admin" && (
+            </div>
+            {user.role === "admin" && (
+              <nav className="hidden md:flex items-center">
                 <Link to="/admin" className="link-nav">
                   Admin
                 </Link>
-              )}
-            </nav>
+              </nav>
+            )}
           </div>
 
           <div className="flex items-center gap-5 sm:gap-8">

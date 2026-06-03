@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import Navbar from "../components/Navbar";
+import PageLayout from "../components/PageLayout";
+import { StatusBadge, PriorityBadge } from "../components/ui/badges";
+
+function MetaRow({ label, children }) {
+  return (
+    <div className="grid grid-cols-[120px_1fr] gap-4 py-4 border-b border-neutral-200 last:border-0">
+      <dt className="label-caps pt-0.5">{label}</dt>
+      <dd className="text-sm text-ink">{children}</dd>
+    </div>
+  );
+}
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -16,14 +25,9 @@ export default function TicketDetailsPage() {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_SERVER_URL}/tickets/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Handle 401 Unauthorized
         if (res.status === 401) {
           localStorage.clear();
           navigate("/login");
@@ -31,15 +35,9 @@ export default function TicketDetailsPage() {
         }
 
         const data = await res.json();
-        
-        if (data.success && data.ticket) {
-          setTicket(data.ticket);
-        } else {
-          alert(data.message || "Failed to fetch ticket");
-        }
+        if (data.success && data.ticket) setTicket(data.ticket);
       } catch (err) {
         console.error(err);
-        alert("Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -48,120 +46,93 @@ export default function TicketDetailsPage() {
     fetchTicket();
   }, [id]);
 
-  if (loading)
+  if (loading) {
     return (
-      <>
-        <Navbar />
-        <div className="text-center mt-10">Loading ticket details...</div>
-      </>
+      <PageLayout className="py-24">
+        <p className="label-caps">Loading</p>
+        <p className="font-display text-2xl text-neutral-400 mt-4">Retrieving ticket…</p>
+      </PageLayout>
     );
+  }
 
-  if (!ticket)
+  if (!ticket) {
     return (
-      <>
-        <Navbar />
-        <div className="text-center mt-10">Ticket not found</div>
-      </>
+      <PageLayout className="py-24 text-center">
+        <p className="font-display text-2xl text-neutral-400">Not found</p>
+        <Link to="/" className="btn-accent inline-flex mt-8">
+          Back to desk
+        </Link>
+      </PageLayout>
     );
+  }
 
   return (
-    <>
-      <Navbar />
-      <div className="max-w-3xl mx-auto p-6 mt-8">
-        <h2 className="text-3xl font-bold mb-8">Ticket Details</h2>
-
-        <div className="bg-base-200 shadow-xl rounded-lg p-8 space-y-6">
-          {/* Title */}
-          <h3 className="text-2xl font-bold">{ticket.title}</h3>
-
-          {/* Description */}
-          <p className="text-base-content/90 text-lg">{ticket.description}</p>
-
-          {/* Metadata Section */}
-          <div className="divider text-lg font-semibold">Metadata</div>
-
-          {/* Status */}
-          <p className="flex items-center gap-2">
-            <strong>Status:</strong>
-            <span
-              className={`badge ${
-                ticket.status === "OPEN"
-                  ? "badge-info"
-                  : ticket.status === "IN_PROGRESS"
-                  ? "badge-warning"
-                  : ticket.status === "RESOLVED"
-                  ? "badge-success"
-                  : "badge-ghost"
-              }`}
-            >
-              {ticket.status}
-            </span>
-          </p>
-
-          {/* Priority */}
-          {ticket.priority && (
-            <p className="flex items-center gap-2">
-              <strong>Priority:</strong>
-              <span
-                className={`badge ${
-                  ticket.priority === "high"
-                    ? "badge-error"
-                    : ticket.priority === "medium"
-                    ? "badge-warning"
-                    : "badge-info"
-                }`}
-              >
-                {ticket.priority}
-              </span>
-            </p>
-          )}
-
-          {/* Related Skills */}
-          {ticket.relatedSkills && ticket.relatedSkills.length > 0 && (
-            <p>
-              <strong>Related Skills:</strong>{" "}
-              <span className="text-base-content/80">
-                {ticket.relatedSkills.join(", ")}
-              </span>
-            </p>
-          )}
-
-          {/* Helpful Notes (AI Response) */}
-          {ticket.helpfulNotes && (
-            <div className="mt-6">
-              <strong className="text-lg block mb-2">Helpful Notes:</strong>
-              <div className="bg-pink-900/30 border-l-4 border-pink-500 rounded-lg p-5 prose prose-invert max-w-none">
-                <ReactMarkdown>{ticket.helpfulNotes}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-
-          {/* Assigned To */}
-          {ticket.assignedTo && (
-            <p>
-              <strong>Assigned To:</strong>{" "}
-              <span className="text-base-content/80">
-                {ticket.assignedTo.email || ticket.assignedTo}
-              </span>
-            </p>
-          )}
-
-          {/* Created By (for moderators/admins) */}
-          {ticket.createdBy && (
-            <p>
-              <strong>Created By:</strong>{" "}
-              <span className="text-base-content/80">
-                {ticket.createdBy.email || ticket.createdBy}
-              </span>
-            </p>
-          )}
-
-          {/* Created At */}
-          <p className="text-sm text-base-content/60 mt-6 pt-4 border-t border-base-300">
-            Created At: {new Date(ticket.createdAt).toLocaleString()}
-          </p>
+    <PageLayout className="py-0">
+      <section className="bg-dots border-b border-neutral-200 -mx-5 sm:-mx-8 px-5 sm:px-8 py-10 sm:py-14">
+        <Link to="/" className="label-caps hover:text-ink transition-colors">
+          ← Desk
+        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          <StatusBadge status={ticket.status} active={ticket.status === "IN_PROGRESS"} />
+          <PriorityBadge priority={ticket.priority} />
         </div>
+        <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl text-ink mt-6 leading-tight max-w-3xl">
+          {ticket.title}
+        </h1>
+        <p className="mt-6 text-sm text-neutral-500 max-w-2xl leading-relaxed whitespace-pre-wrap">
+          {ticket.description}
+        </p>
+      </section>
+
+      <div className="py-12 sm:py-16 grid lg:grid-cols-12 gap-12">
+        <section className="lg:col-span-5">
+          <p className="label-caps mb-6">Record</p>
+          <dl>
+            {ticket.relatedSkills?.length > 0 && (
+              <MetaRow label="Skills">
+                <div className="flex flex-wrap gap-2">
+                  {ticket.relatedSkills.map((skill) => (
+                    <span key={skill} className="badge-box">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </MetaRow>
+            )}
+            {ticket.assignedTo && (
+              <MetaRow label="Assigned">
+                {ticket.assignedTo.email || ticket.assignedTo}
+              </MetaRow>
+            )}
+            {ticket.createdBy && (
+              <MetaRow label="Reporter">
+                {ticket.createdBy.email || ticket.createdBy}
+              </MetaRow>
+            )}
+            <MetaRow label="Filed">
+              {new Date(ticket.createdAt).toLocaleString(undefined, {
+                dateStyle: "full",
+                timeStyle: "short",
+              })}
+            </MetaRow>
+          </dl>
+        </section>
+
+        {ticket.helpfulNotes && (
+          <section className="lg:col-span-7 border border-neutral-200 bg-paper p-6 sm:p-8">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-200">
+              <p className="label-caps">Analysis</p>
+              <span className="flex items-center gap-2">
+                <span className="h-2 w-2 bg-accent" aria-hidden />
+                <span className="label-caps text-accent">Active</span>
+              </span>
+            </div>
+            <div className="prose-clarix">
+              <ReactMarkdown>{ticket.helpfulNotes}</ReactMarkdown>
+            </div>
+          </section>
+        )}
       </div>
-    </>
+    </PageLayout>
   );
 }
