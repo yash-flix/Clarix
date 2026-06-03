@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -7,9 +8,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    if (userData) setUser(JSON.parse(userData));
   }, []);
 
   const handleLogout = () => {
@@ -21,26 +20,33 @@ export default function Navbar() {
   if (!user) return null;
 
   return (
-    <div className="navbar bg-base-300 shadow-lg">
-      <div className="flex-1">
-        <Link to="/" className="btn btn-ghost text-xl">
-          CLARIX
-        </Link>
+    <header className="sticky top-0 z-50 bg-paper border-b border-neutral-200">
+      <div className="max-w-[1200px] mx-auto px-5 sm:px-8">
+        <div className="flex h-[72px] items-center justify-between gap-6">
+          <div className="flex items-center gap-10 lg:gap-16">
+            <Logo to="/" />
+            <nav className="hidden md:flex items-center gap-8">
+              <Link to="/" className="link-nav">
+                Desk
+              </Link>
+              {user.role === "admin" && (
+                <Link to="/admin" className="link-nav">
+                  Admin
+                </Link>
+              )}
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-5 sm:gap-8">
+            <span className="hidden lg:block text-sm text-neutral-400 truncate max-w-[200px]">
+              {user.email}
+            </span>
+            <button type="button" onClick={handleLogout} className="btn-ghost-nav">
+              Sign out
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="flex-none gap-2">
-        <span className="text-sm mr-2">Hi, {user.email}</span>
-        
-        {/* Show Admin button only for admin users */}
-        {user.role === "admin" && (
-          <Link to="/admin" className="btn btn-sm btn-primary">
-            Admin
-          </Link>
-        )}
-        
-        <button onClick={handleLogout} className="btn btn-sm btn-error">
-          Logout
-        </button>
-      </div>
-    </div>
+    </header>
   );
 }
